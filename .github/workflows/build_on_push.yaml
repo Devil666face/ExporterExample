@@ -1,0 +1,49 @@
+name: Run build on any Push event
+on:
+  push:
+    tags:
+      - '!refs/tags/*'
+    branches:
+      - '*'
+jobs:
+  run_build:
+    runs-on: [ubuntu-latest]
+    steps:
+      - uses: actions/checkout@main
+
+      - uses: docker-practice/actions-setup-docker@master
+
+      - name: Build docker image
+        run: docker build . -t img
+
+      - name: Run container
+        run: docker run --rm -v $PWD/bin:/${{ github.event.repository.name }}/bin --name img_build img
+
+      - name: Set tag name
+        run: echo "GITHUB_RELEASE_TAG=$(date +v%m.%d)" >> $GITHUB_ENV
+
+      - name: Create Draft Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ env.GITHUB_RELEASE_TAG }}
+          # release_name: release
+          draft: true
+          prerelease: false
+
+      - uses: actions/upload-release-asset@v1.0.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./bin/main.bin
+          asset_name: main.bin
+          asset_content_type: application/zip
+
+      - uses: eregon/publish-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          release_id: ${{ steps.create_release.outputs.id }} 
