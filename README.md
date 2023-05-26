@@ -1,0 +1,1 @@
+[![Build](https://github.com/Devil666face/ExporterExample/actions/workflows/build_on_push.yaml/badge.svg?branch=main)](https://github.com/Devil666face/ExporterExample/actions/workflows/build_on_push.yaml)

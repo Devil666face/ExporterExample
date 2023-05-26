@@ -1,4 +1,4 @@
-name: Run build on any Push event
+name: Build
 on:
   push:
     tags:
