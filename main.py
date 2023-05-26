@@ -1,6 +1,5 @@
 #!./venv/bin/python
 import random
-import logging, sys
 from http.server import HTTPServer
 from prometheus_client import (
     MetricsHandler,
